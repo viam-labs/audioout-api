@@ -116,6 +116,11 @@ type PlayResponse struct {
 	Text string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
 }
 
+// Error implements error.
+func (*PlayResponse) Error() string {
+	panic("unimplemented")
+}
+
 func (x *PlayResponse) Reset() {
 	*x = PlayResponse{}
 	if protoimpl.UnsafeEnabled {
