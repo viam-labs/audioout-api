@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/edaniels/golog"
-	"go.viam.com/rdk/components/audioinput"
+	audioout "github.com/viam-labs/audioout-api/src/audioout_go"
 	"go.viam.com/rdk/robot/client"
 	"go.viam.com/rdk/utils"
 	"go.viam.com/utils/rpc"
@@ -30,7 +30,7 @@ func main() {
 	logger.Info("Resources:")
 	logger.Info(robot.ResourceNames())
 
-	audio, err := audioinput.FromRobot(robot, "ao")
-	audio.Play("test/munch_2.wav")
+	audio, err := audioout.FromRobot(robot, "ao")
+	audio.Play(context.Background(), "test/munch_2.wav", 0, 10, 0, true)
 
 }
