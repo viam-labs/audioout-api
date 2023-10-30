@@ -109,7 +109,7 @@ type serviceClient struct {
 	logger golog.Logger
 }
 
-// client is an gripper client.
+// client is an Audioout client.
 type client struct {
 	*serviceClient
 	name string
@@ -119,14 +119,14 @@ func clientFromSvcClient(sc *serviceClient, name string) Audioout {
 	return &client{sc, name}
 }
 
-func (c *client) Play(ctx context.Context, file_path string, loop_count, maxtime_ms, fadein_ms int, block bool) error {
+func (c *client) Play(ctx context.Context, file_path string, loop_count, MaxtimeMs, FadeinMs int, Block bool) error {
 	_, err := c.client.Play(ctx, &pb.PlayRequest{
 		Name:      c.name,
 		FilePath:  file_path,
 		LoopCount: int32(loop_count),
-		MaxtimeMs: int32(maxtime_ms),
-		FadeinMs:  int32(fadein_ms),
-		Block:     block,
+		MaxtimeMs: int32(MaxtimeMs),
+		FadeinMs:  int32(FadeinMs),
+		Block:     Block,
 	})
 	if err != nil {
 		return err
