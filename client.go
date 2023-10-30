@@ -30,7 +30,7 @@ func main() {
 	logger.Info("Resources:")
 	logger.Info(robot.ResourceNames())
 
-	audio, err := audioinput.FromRobot(robot, "audioout")
+	audio, err := audioinput.FromRobot(robot, "ao")
 	audio.Play("test/munch_2.wav")
 
 }
