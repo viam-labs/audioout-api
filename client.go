@@ -32,6 +32,6 @@ func main() {
 	logger.Info(robot.ResourceNames())
 
 	audio, err := audioout.FromRobot(robot, "ao")
-	audio.Play(context.Background(), "test/munch_2.wav", 0, 10, 0, true)
 	fmt.Println("err", err)
+	audio.Play(context.Background(), "test/munch_2.wav", 10, 0, 0, true)
 }

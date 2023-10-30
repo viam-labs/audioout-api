@@ -13,7 +13,7 @@ import (
 )
 
 // API is the full API definition.
-var API = resource.APINamespace("viam-labs").WithComponentType("audioout")
+var API = resource.APINamespace("viam-labs").WithServiceType("audioout")
 
 // Named is a helper for getting the named Audioout's typed resource name.
 func Named(name string) resource.Name {
