@@ -5,7 +5,6 @@ import (
 	"context"
 
 	"github.com/edaniels/golog"
-	"go.viam.com/utils/protoutils"
 	"go.viam.com/utils/rpc"
 
 	pb "github.com/viam-labs/audioout-api/src/audioout_go/grpc"
@@ -31,7 +30,7 @@ func init() {
 		// Reconfigurable, and contents of reconfwrapper.go are only needed for standalone (non-module) uses.
 		RPCServiceServerConstructor: NewRPCServiceServer,
 		RPCServiceHandler:           pb.RegisterAudiooutServiceHandlerFromEndpoint,
-		RPCServiceDesc:              &pb.DisplayService_ServiceDesc,
+		RPCServiceDesc:              &pb.AudiooutService_ServiceDesc,
 		RPCClient: func(
 			ctx context.Context,
 			conn rpc.ClientConn,
@@ -47,13 +46,13 @@ func init() {
 // Audioout defines the Go interface for the component (should match the protobuf methods.)
 type Audioout interface {
 	resource.Resource
-	Play(ctx context.Context, file_path string, loop_count, maxtime_ms, fadein_ms int) error
+	Play(ctx context.Context, file_path string, loop_count, maxtime_ms, fadein_ms int, block bool) error
 	Stop(ctx context.Context) error
 }
 
 // serviceServer implements the Audioout RPC service from audioout.proto.
 type serviceServer struct {
-	pb.UnimplementedDisplayServiceServer
+	pb.UnimplementedAudiooutServiceServer
 	coll resource.APIResourceCollection[Audioout]
 }
 
@@ -67,7 +66,7 @@ func (s *serviceServer) Play(ctx context.Context, req *pb.PlayRequest) (*pb.Play
 	if err != nil {
 		return nil, err
 	}
-	err = g.Play(ctx, req.file_path, int(req.loop_count), int(req.maxtime_ms), int(req.fadein_ms))
+	err = g.Play(ctx, req.FilePath, int(req.LoopCount), int(req.MaxtimeMs), int(req.FadeinMs), req.Block)
 	if err != nil {
 		return nil, err
 	}
@@ -84,22 +83,6 @@ func (s *serviceServer) Stop(ctx context.Context, req *pb.StopRequest) (*pb.Stop
 		return nil, err
 	}
 	return &pb.StopResponse{}, nil
-}
-
-func (s *serviceServer) DoCommand(ctx context.Context, req *pb.DoCommandRequest) (*pb.DoCommandResponse, error) {
-	g, err := s.coll.Resource(req.Name)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := g.DoCommand(ctx, req.Command.AsMap())
-	if err != nil {
-		return nil, err
-	}
-	pbResp, err := protoutils.StructToStructPb(resp)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.DoCommandResponse{Result: pbResp}, nil
 }
 
 // NewClientFromConn creates a new Audioout RPC client from an existing connection.
@@ -136,13 +119,14 @@ func clientFromSvcClient(sc *serviceClient, name string) Audioout {
 	return &client{sc, name}
 }
 
-func (c *client) Play(ctx context.Context, file_path string, loop_count, maxtime_ms, fadein_ms int) error {
+func (c *client) Play(ctx context.Context, file_path string, loop_count, maxtime_ms, fadein_ms int, block bool) error {
 	_, err := c.client.Play(ctx, &pb.PlayRequest{
-		Name:       c.name,
-		file_path:  file_path,
-		loop_count: int32(loop_count),
-		maxtime_ms: int32(maxtime_ms),
-		fadein_ms:  int32(fadein_ms),
+		Name:      c.name,
+		FilePath:  file_path,
+		LoopCount: int32(loop_count),
+		MaxtimeMs: int32(maxtime_ms),
+		FadeinMs:  int32(fadein_ms),
+		Block:     block,
 	})
 	if err != nil {
 		return err
@@ -151,26 +135,11 @@ func (c *client) Play(ctx context.Context, file_path string, loop_count, maxtime
 }
 
 func (c *client) Stop(ctx context.Context) error {
-	_, err := c.client.Reset(ctx, &pb.StopRequest{
+	_, err := c.client.Stop(ctx, &pb.StopRequest{
 		Name: c.name,
 	})
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func (c *client) DoCommand(ctx context.Context, cmd map[string]interface{}) (map[string]interface{}, error) {
-	command, err := protoutils.StructToStructPb(cmd)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := c.client.DoCommand(ctx, &pb.DoCommandRequest{
-		Name:    c.name,
-		Command: command,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return resp.Result.AsMap(), nil
 }
