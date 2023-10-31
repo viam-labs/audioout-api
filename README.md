@@ -6,7 +6,7 @@ Proto API and grpc bindings for audioout
 
 ## API
 
-The audioout resource provides the following API:
+The audioout resource implements the following API:
 
 ### play(file_path=*string*, loop_count=*int*(0), maxtime_ms=*int*(0), fadein_ms=*int*(0), block=*bool*)
 
