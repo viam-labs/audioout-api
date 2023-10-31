@@ -33,5 +33,9 @@ func main() {
 
 	audio, err := audioout.FromRobot(robot, "ao")
 	fmt.Println("err", err)
-	audio.Play(context.Background(), "test/munch_2.wav", 10, 0, 0, true)
+	path, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	audio.Play(context.Background(), path+"/test/munch_2.wav", 10, 0, 0, true)
 }
