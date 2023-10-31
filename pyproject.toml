@@ -1,8 +1,11 @@
 [project]
 name = "audioout_api"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Matt Vella", email="mcvella@gmail.com" },
+]
+packages = [
+  { include = "audioout_python" from="src" }
 ]
 description = "Viam modular service API that provides audio output capabilities"
 readme = "README.md"
