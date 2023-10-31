@@ -2,7 +2,7 @@
 This file registers the model with the Python SDK.
 """
 
-from viam.resource.registry import Registry, ResourceCreatorRegistration, ResourceRegistration
+from viam.resource.registry import Registry, ResourceRegistration
 
 from .api import AudiooutClient, AudiooutRPCService, Audioout
 
