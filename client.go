@@ -8,7 +8,6 @@ import (
 	"github.com/edaniels/golog"
 	audioout "github.com/viam-labs/audioout-api/src/audioout_go"
 	"go.viam.com/rdk/robot/client"
-	"go.viam.com/rdk/utils"
 	"go.viam.com/utils/rpc"
 )
 
@@ -18,10 +17,13 @@ func main() {
 		context.Background(),
 		os.Getenv("ROBOT_ADDRESS"),
 		logger,
-		client.WithDialOptions(rpc.WithCredentials(rpc.Credentials{
-			Type:    utils.CredentialsTypeRobotLocationSecret,
-			Payload: os.Getenv("ROBOT_SECRET"),
-		})),
+		client.WithDialOptions(
+			rpc.WithEntityCredentials(
+				os.Getenv("ROBOT_API_KEY_ID"),
+				rpc.Credentials{
+					Type:    rpc.CredentialsTypeAPIKey,
+					Payload: os.Getenv("ROBOT_API_KEY"),
+				})),
 	)
 	if err != nil {
 		logger.Fatal(err)
@@ -31,7 +33,7 @@ func main() {
 	logger.Info("Resources:")
 	logger.Info(robot.ResourceNames())
 
-	audio, err := audioout.FromRobot(robot, "ao")
+	audio, err := audioout.FromRobot(robot, "audio")
 	fmt.Println("err", err)
 	path, err := os.Getwd()
 	if err != nil {

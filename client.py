@@ -9,12 +9,15 @@ from viam.robot.client import RobotClient
 from viam.rpc.dial import Credentials, DialOptions
 
 # these must be set, you can get them from your robot's 'CODE SAMPLE' tab
-robot_secret = os.getenv('ROBOT_SECRET') or ''
 robot_address = os.getenv('ROBOT_ADDRESS') or ''
+robot_api_key = os.getenv('ROBOT_API_KEY') or ''
+robot_api_key_id = os.getenv('ROBOT_API_KEY_ID') or ''
 
 async def connect():
-    creds = Credentials(type="robot-location-secret", payload=robot_secret)
-    opts = RobotClient.Options(refresh_interval=0, dial_options=DialOptions(credentials=creds), log_level=logging.DEBUG)
+    opts = RobotClient.Options.with_api_key(
+      api_key=robot_api_key,
+      api_key_id=robot_api_key_id
+    )
     return await RobotClient.at_address(robot_address, opts)
 
 
@@ -24,7 +27,7 @@ async def main():
     #print("Resources:")
     #print(robot.resource_names)
 
-    ao = Audioout.from_robot(robot, name="ao")
+    ao = Audioout.from_robot(robot, name="audio")
 
     text = await ao.play(os.getcwd() + "/test/munch_2.wav", 10, 0, 0)
     print(f"Played '{text}'")
