@@ -27,7 +27,7 @@ from grpclib.client import Channel
 from grpclib.server import Stream
 
 from viam.resource.rpc_service_base import ResourceRPCServiceBase
-from viam.resource.types import RESOURCE_TYPE_SERVICE, Subtype
+from viam.resource.types import RESOURCE_TYPE_SERVICE, API
 from viam.services.service_base import ServiceBase
 
 from .grpc.audioout_grpc import AudiooutServiceBase, AudiooutServiceStub
@@ -37,7 +37,7 @@ from .grpc.audioout_pb2 import PlayRequest, PlayResponse, StopRequest, StopRespo
 
 class Audioout(ServiceBase):
 
-    SUBTYPE: Final = Subtype("viam-labs", RESOURCE_TYPE_SERVICE, "audioout")
+    API: Final = API("viam-labs", RESOURCE_TYPE_SERVICE, "audioout")
 
     @abc.abstractmethod
     async def play(self, file_path: str, loop_count: int, maxtime_ms: int, fadein_ms: int) -> str:
